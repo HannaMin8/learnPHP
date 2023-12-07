@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
+include '../map/mapLinkedList.php';
 
-function testEmpty() {
+function testEmptyGet() {
 
     $m = new MapLinkedList();
     $v = $m->get('c');
@@ -11,6 +12,31 @@ function testEmpty() {
     } 
 
 }
+
+function testEmptyUnset() {
+
+    $m = new MapLinkedList();
+    $m->unset('x');
+    $v = count($m->getMemory());
+    
+    if ($v !== 0) {
+        exit('FAIL ' . __FUNCTION__);
+    } 
+
+}
+
+function testEmptySet() {
+
+    $m = new MapLinkedList();
+    $m->set('x', 999);
+    $v = $m->get('x');
+    
+    if ($v !== null) {
+        exit('FAIL ' . __FUNCTION__);
+    } 
+
+}
+
 
 function testAddGet() {
 
@@ -65,7 +91,9 @@ function testNextIndex() {
 
 }
 
-testEmpty();
+testEmptyGet();
+testEmptyUnset();
+testEmptySet();
 testAddGet();
 testAddUnset();
 testAddSet();

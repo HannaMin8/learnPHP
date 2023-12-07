@@ -1,11 +1,15 @@
 <?php
 declare(strict_types=1);
-include '../tests/testMapLinkedList.php';
 
 class MapLinkedList {
 
     private $memory =[];
     private $nextIndex = null;
+    
+    public function getMemory(): array {
+        return $this->memory;
+    }
+
     
     public function add($key, $value): void {
 
@@ -21,8 +25,8 @@ class MapLinkedList {
         
     public function get($searchKey) {
 
-        $currentIndex = 0;
         if (count($this->memory) > 0) {
+        $currentIndex = 0;
 
             while ($currentIndex !== null) {
                 $currentArray = $this->memory[$currentIndex];
@@ -33,47 +37,52 @@ class MapLinkedList {
 
                 $currentIndex = $currentArray[2];
             }
-            return null;
+    
         }
         return null;
     }
     
     public function unset($searchKey): void {
 
+        if (count($this->memory) > 0) {
         $currentIndex = 0;
         
-        while ($currentIndex !== null) {
-            $currentArray = $this->memory[$currentIndex];
-            if ($currentArray[0] === $searchKey) {
-                if (count($this->memory) > 1) {
-                    $nextIndex = $currentArray[2];            
-                    $this->memory[$currentIndex - 1][2]  = $nextIndex;
+            while ($currentIndex !== null) {
+                
+                $currentArray = $this->memory[$currentIndex];
+                if ($currentArray[0] === $searchKey) {
+                    if (count($this->memory) > 1) {
+                        $nextIndex = $currentArray[2];            
+                        $this->memory[$currentIndex - 1][2]  = $nextIndex;
+                        unset($this->memory[$currentIndex]); 
+                        $currentIndex = $nextIndex;
+                        break;
+                    }
                     unset($this->memory[$currentIndex]); 
-                    $currentIndex = $nextIndex;
+                    $currentIndex = null;
                     break;
-                }
-                unset($this->memory[$currentIndex]); 
-                $currentIndex = null;
-                break;
-            } 
-            $currentIndex = $currentArray[2];
-        }    
+                } 
+                $currentIndex = $currentArray[2];
+            }    
+        }
     }
 
     public function set(string $searchKey, int $newValue): void  {
 
+        if (count($this->memory) > 0) {
         $currentIndex = 0;
         $prevIndex = 0;
 
-        while ($currentIndex !== null) {
-            $currentArray = $this->memory[$currentIndex];
-            
-                if ($currentArray[0] === $searchKey) {
-                    $this->memory[$currentIndex][1] = $newValue; 
-                    break;
-                } 
-            $currentIndex = $currentArray[2];
-        }  
+            while ($currentIndex !== null) {
+                $currentArray = $this->memory[$currentIndex];
+                
+                    if ($currentArray[0] === $searchKey) {
+                        $this->memory[$currentIndex][1] = $newValue; 
+                        break;
+                    } 
+                $currentIndex = $currentArray[2];
+            }  
+        }
     }
     
 }

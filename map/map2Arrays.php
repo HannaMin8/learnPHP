@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-include '../tests/testMap2Arrays.php';
 
 class Map2Arrays {
 
