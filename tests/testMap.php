@@ -2,7 +2,7 @@
 declare(strict_types=1);
 include '../map/map.php';
 
-function testAddGet() {
+function addGet() {
 
     $m = new Map();
     $m->add('x', 777);
@@ -14,7 +14,7 @@ function testAddGet() {
 
 }
 
-function testAddUnset() {
+function addUnset() {
 
     $m = new Map();
     $m->add('x', 777);
@@ -27,7 +27,7 @@ function testAddUnset() {
     
 }
 
-function testAddSet() {
+function addSet() {
 
     $m = new Map();
     $m->add('x', 777);
@@ -40,6 +40,43 @@ function testAddSet() {
     
 }
 
-testAddGet();
-testAddUnset();
-testAddSet();
+function each() {
+    $map = new Map();
+    $map->add('a', 777);
+    $map->add('b', 888);
+    $map->add('c', 999);
+    $visitedElements = [];
+    $map->each(function ($key, $value) use (&$visitedElements){
+        
+        $visitedElements[] = ['key' => $key, 'value' => $value];
+      
+    });
+
+    var_dump( $visitedElements);
+    
+    if ([['key' => 'a', 'value' => 777], 
+    ['key' => 'b', 'value' => 888],
+    ['key' => 'c', 'value' => 999]] !== $visitedElements) {
+        exit('FAIL ' . __FUNCTION__);
+    } 
+}
+
+
+addGet();
+addUnset();
+addSet();
+each();
+
+
+
+
+function eachEmpty() {
+    $m = new Map();
+    $v = $m->each(function ($key, $value){
+        var_dump($key, $value);
+    });
+    if ($v !== null) {
+        exit('FAIL ' . __FUNCTION__);
+    } 
+}
+eachEmpty();

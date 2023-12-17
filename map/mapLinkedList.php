@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
+include_once 'interface.php';
 
-class MapLinkedList {
+class MapLinkedList implements MapInterface {
 
     private $memory =[];
     private $nextIndex = null;
@@ -85,4 +86,17 @@ class MapLinkedList {
         }
     }
     
+    public function each(callable $callback): void {
+    
+        $currentIndex = 0;
+        
+        while ($currentIndex !== null) {
+            $currentArray = $this->memory[$currentIndex];
+            $key = $currentArray[0];
+            $value = $currentArray[1];
+            $currentIndex = $currentArray[2];
+            $callback($key, $value);
+        }
+       
+    }
 }

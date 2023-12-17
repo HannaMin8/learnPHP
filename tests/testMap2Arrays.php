@@ -40,6 +40,27 @@ function testAddSet() {
     
 }
 
+function each() {
+    $map = new Map2Arrays();
+    $map->add('a', 777);
+    $map->add('b', 888);
+    $map->add('c', 999);
+    $visitedElements = [];
+    $map->each(function ($key, $value) use (&$visitedElements){
+        
+        $visitedElements[] = ['key' => $key, 'value' => $value];
+       
+    });
+    var_dump( $visitedElements);
+
+    if ([['key' => 'a', 'value' => 777], 
+    ['key' => 'b', 'value' => 888],
+    ['key' => 'c', 'value' => 999]] !== $visitedElements) {
+        exit('FAIL ' . __FUNCTION__);
+    } 
+}
+
 testAddGet();
 testAddUnset();
 testAddSet();
+each();

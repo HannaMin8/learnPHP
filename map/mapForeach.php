@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
+include_once 'interface.php';
 
-class MapForeach {
+class MapForeach implements MapInterface {
 
     private $arrayKeys =[];
     private $arrayValues =[];
@@ -44,6 +45,15 @@ class MapForeach {
                 $this->arrayValues[$i] = $newValue;
                 break;
             } 
+        }
+    }
+
+    public function each(callable $callback): void {
+
+        foreach ($this->arrayKeys as $i => $value) {
+            $key = $this->arrayKeys[$i];
+            $value = $this->arrayValues[$i];
+            $callback($key, $value);
         }
     }
 
