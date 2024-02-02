@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 echo '<pre>';
 $errors = array();
-
+$name = $_POST['name'] ?? '';
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
+$repeatPassword = $_POST['repeatPassword'] ?? '';
+$age = $_POST['age'] ?? '';
+$color = $_POST['color'] ?? '';
+$country = $_POST['country'] ?? '';
+$visitedCountries = $_POST['visitedCountries'] ?? '';
+$games = $_POST['games'] ?? '';
 
 foreach ($_POST as $key =>$value) {
-    $_POST[$key] = htmlspecialchars($value);//предотвращает вставки html-кода, html-код будет выведен как обычный текст
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $repeatPassword = $_POST['repeatPassword'];
-    $age = $_POST['age'];
-    $color = $_POST['color'];
-    $country = $_POST['country'];
-    $visitedCountries = $_POST['visitedCountries'];
-    $games = $_POST['games'];
+    $_POST[$key] = htmlspecialchars($value);
+  
     
     if (!isset($name) || $name === null || strlen($name) === 0) {
         $errors['name'] = 'The field is required';
@@ -29,42 +29,49 @@ foreach ($_POST as $key =>$value) {
     }
     if (!isset($repeatPassword) || $repeatPassword === null || strlen($repeatPassword) === 0) {
         $errors['pwdRep'] = 'The field is required';
-    }else{ if (strlen($repeatPassword) < 8) {
+    }else{ 
+        if (strlen($repeatPassword) < 8) {
         $errors['pwdRepCont'] = 'Password must contain 8 or more characters';
         }
     }
     if (strlen($password) >= 8 && strlen($repeatPassword) >= 8 && $password !== $repeatPassword) {
         $errors['pwdMis'] = 'Password mismatch';
     }
-    if (!is_numeric($age)) {
+    if ($age !== null && $age !== '' && !is_numeric($age)) {
         $errors['ageNum'] = 'Not a number';       
+    }else{
+        if ($age !== null && $age !== '' &&  $age <= 0) {
+            $errors['age'] = 'Number must be > 0';       
+        }
     }
-    if ($age <= 0) {
-        $errors['age'] = 'Number must be > 0';       
-    }
-    if (ctype_xdigit($color)) {
+
+    if ($color !== null && ctype_xdigit($color)) {
+
         $errors['color'] = 'Select a color from the options';       
     }
     if (!isset($country) || $country === null || strlen($country) === 0) {
         $errors['enterCountry'] = 'The field is required';
+    }else{
+        if (!in_array($country, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
+            $errors['country'] = 'Enter your country correctly';
+        }
     }
-    if (!in_array($country, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
-        $errors['country'] = 'Enter your country correctly';
-    }
-    if (!in_array($visitedCountries, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
+    if ($visitedCountries !== null && $visitedCountries !== '' && !in_array($visitedCountries, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
         $errors['visitedCountries'] = 'Select countries from the options';
     }
-    if (!in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
+    if ($visitedCountries !== null && $visitedCountries !== '' && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
         $errors['games'] = 'Select games from the options';
     }
     if (empty($errors)) {
         echo "$key: $value <br>";
-    } 
+    }
+    
 }
 echo '</pre>';
 ?>
 
 <form method="post" enctype="application/x-www-form-urlencoded" action="">
+
 Name:<br>
 <?php
     if (isset($errors['name'])) {
