@@ -15,6 +15,19 @@ $country = trim($_POST['country'] ?? '');
 $visitedCountries = $_POST['visitedCountries'] ?? '';
 $games = trim($_POST['games'] ?? '');
 $promise = trim($_POST['promise'] ?? '');
+$countriesList = [
+    "AU" => "Australia",
+    "CA" => "Canada",
+    "CZ" => "Czech",
+    "DK" => "Denmark",
+    "FI" => "Finland",
+    "JP" => "Japan", 
+    "PL" => "Poland",
+    "SE" => "Sweden",
+    "USA" => "USA",
+    "UA" => "Ukraine" 
+];
+$playGames = ["Every day", "Once a week", "Once a month", "Rarely", "Never"];
 
 if (isset($_POST['submit'])){
     if (strlen($name) === 0) {
@@ -59,7 +72,7 @@ if (isset($_POST['submit'])){
     if ($visitedCountries !== '' && !in_array($visitedCountries, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
         $errors['visitedCountries'] = 'Select countries from the options';
     }
-    if ($visitedCountries !== '' && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
+    if ($games !== [] && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
         $errors['games'] = 'Select games from the options';
     }
     
@@ -157,18 +170,14 @@ Country of birth:<br>
     }
 ?>
 <select name="country">
-    <option value="" selected disabled> </option>
-    <option value="AU"<?= ($country === 'AU') ? 'selected' : '' ?>>Australia</option>
-    <option value="CA"<?= ($country === 'CA') ? 'selected' : '' ?>>Canada</option>
-    <option value="CZ"<?= ($country === 'CZ') ? 'selected' : '' ?>>Czech</option>
-    <option value="DK"<?= ($country === 'DK') ? 'selected' : '' ?>>Denmark</option>
-    <option value="FI"<?= ($country === 'FI') ? 'selected' : '' ?>>Finland</option>
-    <option value="JP"<?= ($country === 'JP') ? 'selected' : '' ?>>Japan</option>   
-    <option value="PL"<?= ($country === 'PL') ? 'selected' : '' ?>>Poland</option>
-    <option value="SE"<?= ($country === 'SE') ? 'selected' : '' ?>>Sweden</option>   
-    <option value="USA"<?= ($country === 'USA') ? 'selected' : '' ?>>USA</option>
-    <option value="UA"<?= ($country === 'UA') ? 'selected' : '' ?>>Ukraine</option> 
+    <option value=""> </option>
+    <?php
+    foreach ($countriesList as $code => $name) {
+        echo "<option value=\"$code\"" . ($country === $code ? 'selected' : '') . ">$name</option>";
+    }   
+    ?>
 </select><span style='color: red;'>*</span><br><br>
+
 
 Visited countries:<br>
 <?php
@@ -188,18 +197,13 @@ Visited countries:<br>
     <option value="AU">USA</option>
     <option value="UA">Ukraine</option> 
 </select><br><br>
-
+    
 How often do you play computer games:<br>
-<input type="radio" name="games" value="Every day" <?= ($games === 'Every day') ? 'checked' : '' ?>>
-<label for="option1">Every day</label>
-<input type="radio" name="games" value="Once a week" <?= ($games === 'Once a week') ? 'checked' : '' ?>>
-<label for="option2">Once a week</label>
-<input type="radio" name="games" value="Once a month" <?= ($games === 'Once a month') ? 'checked' : '' ?>>
-<label for="option3">Once a month</label>
-<input type="radio" name="games" value="Rarely" <?= ($games === 'Rarely') ? 'checked' : '' ?>>
-<label for="option4">Rarely</label>
-<input type="radio" name="games" value="Never" <?= ($games === 'Never') ? 'checked' : '' ?>>
-<label for="option5">Never</label><br><br>
+<?php foreach ($playGames as $nun => $value): ?>
+    <input type="radio" name="games" value="<?= $value ?>" <?= ($games === $value) ? 'checked' : '' ?>>
+    <label for="option<?=$num?>"><?=$value?></label>
+<?php endforeach; ?>
+<br><br>
 
 I promise I'll be a good girl:
 <input type="checkbox" name="promise" value="yes"<?= ($promise === 'yes') ? 'checked' : '' ?>><br><br>
