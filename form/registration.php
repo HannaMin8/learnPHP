@@ -65,7 +65,11 @@ if (isset($_POST['submit'])){
     
     if (empty($errors)) {
         foreach ($_POST as $key => $value) {
-        echo "$key: " . htmlspecialchars($value) . "<br>";
+            if ($key === 'color'){
+                echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
+            } else {
+            echo "$key: " . htmlspecialchars($value) . "<br>";
+            }
         }
     }  
 }
