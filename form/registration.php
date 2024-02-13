@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
+function estlikodvmassive (string $code, array $visitedCountries) : bool {
 
+    foreach  ($visitedCountries as $selectedCountry) {
+        if ($code === $selectedCountry) {
+            return true;
+        }
+    }
+    return false;
+}
 echo '<pre>';
 $errors = array();
 $name = trim($_POST['name'] ?? '');
@@ -12,7 +20,8 @@ $aboutMe = trim($_POST['aboutMe'] ?? '');
 $age = trim($_POST['age'] ?? '');
 $color = trim($_POST['color'] ?? '');
 $country = trim($_POST['country'] ?? '');
-$visitedCountries = $_POST['visitedCountries'] ?? '';
+$visitedCountries = $_POST['visitedCountries'] ?? [];
+var_dump($visitedCountries);
 $games = trim($_POST['games'] ?? '');
 $promise = trim($_POST['promise'] ?? '');
 $countriesList = [
@@ -69,7 +78,7 @@ if (isset($_POST['submit'])){
             $errors['country'] = 'Enter your country correctly';
         }
     }
-    if ($visitedCountries !== '' && !in_array($visitedCountries, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
+    if ($visitedCountries !== [] && !in_array($visitedCountries, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
         $errors['visitedCountries'] = 'Select countries from the options';
     }
     if ($games !== [] && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
@@ -159,7 +168,6 @@ My favorite color:<br>
 <input type="color" name="color" value="<?= isset($color) ? $color : '' ?>"
     style="background-color: 
     <?= ($color ?? '#ffffff'); ?>"> <br><br>
-
 Country of birth:<br>
 <?php
     if (isset($errors['enterCountry'])) {
@@ -186,22 +194,15 @@ Visited countries:<br>
     }
 ?>
 <select name="visitedCountries[]" multiple>
-    <option value="AU">Australia</option>
-    <option value="CA" >Canada</option>
-    <option value="CZ" >Czech</option>
-    <option value="DK">Denmark</option>
-    <option value="FI">Finland</option>
-    <option value="JP">Japan</option>   
-    <option value="PL">Poland</option>
-    <option value="SE">Sweden</option>   
-    <option value="AU">USA</option>
-    <option value="UA">Ukraine</option> 
+<?php foreach ($countriesList as $code => $name): ?> 
+    <option <?= estlikodvmassive($code, $visitedCountries) ? 'selected' : ''?> value = "<?= $code ?>"><?= $name ?></option>
+<?php endforeach; ?>
 </select><br><br>
     
 How often do you play computer games:<br>
-<?php foreach ($playGames as $nun => $value): ?>
+<?php foreach ($playGames as $num => $value): ?>
     <input type="radio" name="games" value="<?= $value ?>" <?= ($games === $value) ? 'checked' : '' ?>>
-    <label for="option<?=$num?>"><?=$value?></label>
+    <label for="option <?= $num ?> "><?=$value?></label>
 <?php endforeach; ?>
 <br><br>
 
