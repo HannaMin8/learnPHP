@@ -21,7 +21,7 @@ $age = trim($_POST['age'] ?? '');
 $color = trim($_POST['color'] ?? '');
 $country = trim($_POST['country'] ?? '');
 $visitedCountries = $_POST['visitedCountries'] ?? [];
-var_dump($visitedCountries);
+
 $games = trim($_POST['games'] ?? '');
 $promise = trim($_POST['promise'] ?? '');
 $countriesList = [
