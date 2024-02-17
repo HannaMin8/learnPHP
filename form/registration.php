@@ -1,14 +1,6 @@
 <?php
 declare(strict_types=1);
-function estlikodvmassive (string $code, array $visitedCountries) : bool {
 
-    foreach  ($visitedCountries as $selectedCountry) {
-        if ($code === $selectedCountry) {
-            return true;
-        }
-    }
-    return false;
-}
 echo '<pre>';
 $errors = array();
 $name = trim($_POST['name'] ?? '');
@@ -74,13 +66,19 @@ if (isset($_POST['submit'])){
     if (strlen($country) === 0) {
         $errors['enterCountry'] = 'The field is required';
     }else{
-        if (!in_array($country, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
+            if (!in_array($country, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
             $errors['country'] = 'Enter your country correctly';
         }
     }
-    if ($visitedCountries !== [] && !in_array($visitedCountries, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
-        $errors['visitedCountries'] = 'Select countries from the options';
+
+ 
+    foreach ( $visitedCountries as $selectCountry){
+    
+        if (!array_key_exists($selectCountry, $countriesList)){
+            $errors['visitedCountries'] = 'Select countries from the options';
+        }
     }
+
     if ($games !== [] && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
         $errors['games'] = 'Select games from the options';
     }
@@ -89,11 +87,13 @@ if (isset($_POST['submit'])){
         foreach ($_POST as $key => $value) {
             if ($key === 'color'){
                 echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
+            } elseif ($key === 'visitedCountries'){
+                echo "$key:" . implode(', ', $visitedCountries) ."<br>";
             } else {
             echo "$key: " . htmlspecialchars($value) . "<br>";
             }
         }
-    }  
+    }
 }
 
 echo '</pre>';
@@ -195,7 +195,7 @@ Visited countries:<br>
 ?>
 <select name="visitedCountries[]" multiple>
 <?php foreach ($countriesList as $code => $name): ?> 
-    <option <?= estlikodvmassive($code, $visitedCountries) ? 'selected' : ''?> value = "<?= $code ?>"><?= $name ?></option>
+    <option <?= in_array($code, $visitedCountries) ? 'selected' : ''?> value = "<?= $code ?>"><?= $name ?></option>
 <?php endforeach; ?>
 </select><br><br>
     
