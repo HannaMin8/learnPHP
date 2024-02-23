@@ -30,29 +30,47 @@ $countriesList = [
 ];
 $playGames = ["Every day", "Once a week", "Once a month", "Rarely", "Never"];
 
+function printError ($field, $errors){
+    if (isset($errors[$field])) {
+        echo "<div style='color: red;'>{$errors[$field]}</div>";
+    }
+}  
+
 if (isset($_POST['submit'])){
     if (strlen($name) === 0) {
         $errors['name'] = 'The field is required';
     }
+
+    if (strlen($email) === 0) {
+        $errors['email'] = 'The field is required';
+    } else{
+        if (strpos($email, '@') === false) {
+            $errors['email'] = 'Invalid email format(missing @)';
+        }
+    }
+
     if (strlen($password) === 0) {
-        $errors['pwd'] = 'The field is required';
+        $errors['password'] = 'The field is required';
     }else{  
         if (strlen($password) < 8) {
-        $errors['pwdCont'] = 'Password must contain 8 or more characters';
+        $errors['password'] = 'Password must contain 8 or more characters';
         }
     }
+
     if (strlen($repeatPassword) === 0) {
-        $errors['pwdRep'] = 'The field is required';
+        $errors['repeatPassword'] = 'The field is required';
     }else{ 
         if (strlen($repeatPassword) < 8) {
-        $errors['pwdRepCont'] = 'Password must contain 8 or more characters';
+        $errors['repeatPassword'] = 'Password must contain 8 or more characters';
         }
     }
+
     if (strlen($password) >= 8 && strlen($repeatPassword) >= 8 && $password !== $repeatPassword) {
-        $errors['pwdMis'] = 'Password mismatch';
+        $errors['repeatPassword'] = 'Password mismatch';
     }
+
     if ($age !== '' && !is_numeric($age)) {
-        $errors['ageNum'] = 'Not a number';       
+        $errors['age'] = 'Not a number';       
     }else{
         if ($age !== '' &&  $age <= 0) {
             $errors['age'] = 'Number must be > 0';       
@@ -60,29 +78,28 @@ if (isset($_POST['submit'])){
     }
 
     if (ctype_xdigit($color)) {
-
         $errors['color'] = 'Select a color from the options';       
     }
+
     if (strlen($country) === 0) {
-        $errors['enterCountry'] = 'The field is required';
+        $errors['country'] = 'The field is required';
     }else{
             if (!in_array($country, ["AU","CA","CZ","DK","FI","JP","PL","SE","USA","UA"])){
             $errors['country'] = 'Enter your country correctly';
         }
     }
 
- 
-    foreach ( $visitedCountries as $selectCountry){
+    foreach ($visitedCountries as $selectCountry){
     
         if (!array_key_exists($selectCountry, $countriesList)){
             $errors['visitedCountries'] = 'Select countries from the options';
         }
     }
 
-    if ($games !== [] && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
+    if ($games !== '' && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
         $errors['games'] = 'Select games from the options';
-    }
-    
+    } 
+
     if (empty($errors)) {
         foreach ($_POST as $key => $value) {
             if ($key === 'color'){
@@ -102,81 +119,39 @@ echo '</pre>';
 <form method="post" enctype="application/x-www-form-urlencoded" action="">
 
 Name:<br>
-<?php
-    if (isset($errors['name'])) {
-        echo "<div style='color: red;'>{$errors['name']}</div>";
-    }
-?>
+<?php printError('name', $errors); ?> 
 <input type="text" name="name" value="<?= isset($name) ? htmlspecialchars($name) : '' ?>"><span style='color: red;'>*</span><br><br>
 
 Surname:<br>
 <input type="text" name="surname" value="<?= isset($surname) ? htmlspecialchars($surname) : '' ?>"><br><br>
 
 Email:<br>
-<?php
-    if (isset($errors['email'])) {
-        echo "<div style='color: red;'>{$errors['email']}</div>";
-    }
-?>
+<?php printError('email', $errors); ?> 
 <input type="email"  name="email" value="<?= isset($email) ? htmlspecialchars($email) : '' ?>"><span style='color: red;'>*</span><br><br>
 
 Password:<br>
-<?php
-    if (isset($errors['pwd'])) {
-        echo "<span style='color: red;'>{$errors['pwd']}</span><br>";
-    }
-    if (isset($errors['pwdCont'])) {
-        echo "<span style='color: red;'>{$errors['pwdCont']}</span><br>";
-    }
-?>
+<?php printError('password', $errors); ?> 
 <input type="password"  name="password" value="<?= isset($password) ? htmlspecialchars($password) : '' ?>"><span style='color: red;'>*</span><br><br>
 
 Repeat password:<br>
-<?php
-    if (isset($errors['pwdRep'])) {
-        echo "<span style='color: red;'>{$errors['pwdRep']}</span><br>";
-    }   
-    if (isset($errors['pwdRepCont'])) {
-        echo "<span style='color: red;'>{$errors['pwdRepCont']}</span><br>";
-    } 
-    if (isset($errors['pwdMis'])) {
-        echo "<span style='color: red;'>{$errors['pwdMis']}</span><br>";
-    }
-?>
+<?php printError('repeatPassword', $errors); ?> 
 <input type="password" name="repeatPassword" value="<?= isset($repeatPassword) ? htmlspecialchars($repeatPassword) : '' ?>"><span style='color: red;'>*</span><br><br>
 
 About me:<br>
 <textarea name="aboutMe"><?=htmlspecialchars($aboutMe);?></textarea><br><br>
 
 Age:<br>
-<?php
-    if (isset($errors['ageNum'])) {
-    echo "<span style='color: red;'>{$errors['ageNum']}</span><br>";
-    }
-    if (isset($errors['age'])) {
-        echo "<span style='color: red;'>{$errors['age']}</span><br>";
-    }
-?>
+<?php printError('age', $errors); ?> 
 <input type="number" name="age" value="<?= isset($age) ? htmlspecialchars($age) : '' ?>"><br><br>
 
 My favorite color:<br>
-<?php
-    if (isset($errors['color'])) {
-        echo "<span style='color: red;'>{$errors['color']}</span><br>";
-    }
-?>
+<?php printError('color', $errors); ?> 
 <input type="color" name="color" value="<?= isset($color) ? $color : '' ?>"
     style="background-color: 
     <?= ($color ?? '#ffffff'); ?>"> <br><br>
+
 Country of birth:<br>
-<?php
-    if (isset($errors['enterCountry'])) {
-    echo "<span style='color: red;'>{$errors['enterCountry']}</span><br>";
-    }
-    if (isset($errors['country'])) {
-    echo "<span style='color: red;'>{$errors['country']}</span><br>";
-    }
-?>
+<?php printError('country', $errors); ?> 
 <select name="country">
     <option value=""> </option>
     <?php
@@ -188,21 +163,18 @@ Country of birth:<br>
 
 
 Visited countries:<br>
-<?php
-    if (isset($errors['visitedCountries'])) {
-    echo "<span style='color: red;'>{$errors['visitedCountries']}</span><br>";
-    }
-?>
+<?php printError('visitedCountries', $errors); ?> 
 <select name="visitedCountries[]" multiple>
 <?php foreach ($countriesList as $code => $name): ?> 
     <option <?= in_array($code, $visitedCountries) ? 'selected' : ''?> value = "<?= $code ?>"><?= $name ?></option>
 <?php endforeach; ?>
 </select><br><br>
-    
+
+  
 How often do you play computer games:<br>
 <?php foreach ($playGames as $num => $value): ?>
     <input type="radio" name="games" value="<?= $value ?>" <?= ($games === $value) ? 'checked' : '' ?>>
-    <label for="option <?= $num ?> "><?=$value?></label>
+    <label for="option<?= $num ?>"><?=$value?></label>
 <?php endforeach; ?>
 <br><br>
 
