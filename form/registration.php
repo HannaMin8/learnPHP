@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 echo '<pre>';
+
 $errors = array();
 $name = trim($_POST['name'] ?? '');
 $surname = trim($_POST['surname'] ?? '');
@@ -37,6 +38,30 @@ function printError ($field, $errors){
 }  
 
 if (isset($_POST['submit'])){
+    var_dump(ini_get('upload_tmp_dir'), ini_get('upload_max_filesize'), $_FILES);
+    if (!empty($_FILES['avatar']['name'])) {
+        $tempFilePath = $_FILES['avatar']['tmp_name'];
+        $originalFileName = $_FILES['avatar']['name'];
+        $fileExtension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $targetDirectory = __DIR__ . '/avatars/';
+        //if (strpos($originalFileName, $targetDirectory) === 0) {
+            if (in_array($fileExtension, $allowedExtensions)) {
+                $newFileName = str_replace('@', '_', $email) . '-' . $name . '.jpeg';
+                $savePath = __DIR__ . '/avatars/' . $newFileName;
+                //$r = move_uploaded_file($_FILES['avatar']['tmp_name'], 'avatars/$newFileName');
+                if (move_uploaded_file($tempFilePath,  $savePath)) {
+                    echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
+                } else {
+                    echo "<div style='color: red;'>Error: Unable to save the file.</div>";
+                }
+            } else {
+                echo "<div style='color: red;'>Error: Invalid file extension.</div>";
+            }
+        } else {
+            echo "<div style='color: red;'>Error: Invalid file name or directory.</div>";
+    // }
+    }
     if (strlen($name) === 0) {
         $errors['name'] = 'The field is required';
     }
@@ -107,7 +132,7 @@ if (isset($_POST['submit'])){
             } elseif ($key === 'visitedCountries'){
                 echo "$key:" . implode(', ', $visitedCountries) ."<br>";
             } else {
-            echo "$key: " . htmlspecialchars($value) . "<br>";
+            echo "$key: " . htmlspecialchars(trim($value)) . "<br>";
             }
         }
     }
@@ -116,7 +141,7 @@ if (isset($_POST['submit'])){
 echo '</pre>';
 ?>
 
-<form method="post" enctype="application/x-www-form-urlencoded" action="">
+<form method="post" enctype="multipart/form-data" action="">
 
 Name:<br>
 <?php printError('name', $errors); ?> 
@@ -177,6 +202,12 @@ How often do you play computer games:<br>
     <label for="option<?= $num ?>"><?=$value?></label>
 <?php endforeach; ?>
 <br><br>
+
+
+
+Avatar: <input type="file" name="avatar">
+<!--    <input type="submit" value="Upload"> -->
+    <br><br>
 
 I promise I'll be a good girl:
 <input type="checkbox" name="promise" value="yes"<?= ($promise === 'yes') ? 'checked' : '' ?>><br><br>
