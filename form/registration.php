@@ -46,22 +46,26 @@ if (isset($_POST['submit'])){
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
         $targetDirectory = __DIR__ . '/avatars/';
         //if (strpos($originalFileName, $targetDirectory) === 0) {
-            if (in_array($fileExtension, $allowedExtensions)) {
-                $newFileName = str_replace('@', '_', $email) . '-' . $name . '.jpeg';
-                $savePath = __DIR__ . '/avatars/' . $newFileName;
-                //$r = move_uploaded_file($_FILES['avatar']['tmp_name'], 'avatars/$newFileName');
-                if (move_uploaded_file($tempFilePath,  $savePath)) {
-                    echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
-                } else {
-                    echo "<div style='color: red;'>Error: Unable to save the file.</div>";
-                }
+        if (in_array($fileExtension, $allowedExtensions)) {
+            $newFileName = str_replace('@', '_', $email) . '-' . $name . '.jpeg';
+            $savePath = __DIR__ . '/avatars/' . $newFileName;
+            $fileUrl = 'avatars/' . $newFileName;
+            //$r = move_uploaded_file($_FILES['avatar']['tmp_name'], 'avatars/$newFileName');
+            if (move_uploaded_file($tempFilePath,  $savePath)) {
+                echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
+                echo "<a href='$fileUrl' target='_blank'>View Image</a>";
+                echo "<br>";
             } else {
-                echo "<div style='color: red;'>Error: Invalid file extension.</div>";
+                echo "<div style='color: red;'>Error: Unable to save the file.</div>";
             }
         } else {
-            echo "<div style='color: red;'>Error: Invalid file name or directory.</div>";
+            echo "<div style='color: red;'>Error: Invalid file extension.</div>";
+        }
+    } else {
+        echo "<div style='color: red;'>Error: No file selected.</div>";
     // }
     }
+
     if (strlen($name) === 0) {
         $errors['name'] = 'The field is required';
     }
@@ -141,7 +145,7 @@ if (isset($_POST['submit'])){
 echo '</pre>';
 ?>
 
-<form method="post" enctype="multipart/form-data" action="">
+<form method="post" enctype="multipart/form-data" action="" >
 
 Name:<br>
 <?php printError('name', $errors); ?> 
