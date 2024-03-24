@@ -36,21 +36,21 @@ function printError ($field, $errors){
         echo "<div style='color: red;'>{$errors[$field]}</div>";
     }
 }  
-
+//var_dump($_FILES['avatar']['error']);
 if (isset($_POST['submit'])){
     var_dump(ini_get('upload_tmp_dir'), ini_get('upload_max_filesize'), $_FILES);
-    if (!empty($_FILES['avatar']['name'])) {
+    if (!empty($_FILES['avatar']['name']) && !empty($_FILES['avatar']['tmp_name'])) {
         $tempFilePath = $_FILES['avatar']['tmp_name'];
         $originalFileName = $_FILES['avatar']['name'];
         $fileExtension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
         $targetDirectory = __DIR__ . '/avatars/';
-        //if (strpos($originalFileName, $targetDirectory) === 0) {
-        if (in_array($fileExtension, $allowedExtensions)) {
-            $newFileName = str_replace('@', '_', $email) . '-' . $name . '.jpeg';
+        $imageInfo = @getimagesize($tempFilePath);
+ 
+        if ($imageInfo !== false) { 
+            $newFileName = str_replace('@', '_', $email) . ".$fileExtension"; ;
             $savePath = __DIR__ . '/avatars/' . $newFileName;
             $fileUrl = 'avatars/' . $newFileName;
-            //$r = move_uploaded_file($_FILES['avatar']['tmp_name'], 'avatars/$newFileName');
+          
             if (move_uploaded_file($tempFilePath,  $savePath)) {
                 echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
                 echo "<a href='$fileUrl' target='_blank'>View Image</a>";
@@ -62,8 +62,7 @@ if (isset($_POST['submit'])){
             echo "<div style='color: red;'>Error: Invalid file extension.</div>";
         }
     } else {
-        echo "<div style='color: red;'>Error: No file selected.</div>";
-    // }
+        echo "<div style='color: red;'>Error: The file is not an image.</div>";
     }
 
     if (strlen($name) === 0) {
@@ -210,7 +209,6 @@ How often do you play computer games:<br>
 
 
 Avatar: <input type="file" name="avatar">
-<!--    <input type="submit" value="Upload"> -->
     <br><br>
 
 I promise I'll be a good girl:
