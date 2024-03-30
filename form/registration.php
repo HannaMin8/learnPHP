@@ -30,6 +30,14 @@ $countriesList = [
     "UA" => "Ukraine" 
 ];
 $playGames = ["Every day", "Once a week", "Once a month", "Rarely", "Never"];
+$tempFilePath = '';
+$originalFileName = '';
+$fileExtension = '';
+$targetDirectory = '';
+$newFileName = '';
+$savePath = '';
+$fileUrl = '';
+$imageInfo = '';
 
 function printError ($field, $errors){
     if (isset($errors[$field])) {
@@ -38,32 +46,6 @@ function printError ($field, $errors){
 }  
 //var_dump($_FILES['avatar']['error']);
 if (isset($_POST['submit'])){
-    var_dump(ini_get('upload_tmp_dir'), ini_get('upload_max_filesize'), $_FILES);
-    if (!empty($_FILES['avatar']['name']) && !empty($_FILES['avatar']['tmp_name'])) {
-        $tempFilePath = $_FILES['avatar']['tmp_name'];
-        $originalFileName = $_FILES['avatar']['name'];
-        $fileExtension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
-        $targetDirectory = __DIR__ . '/avatars/';
-        $imageInfo = @getimagesize($tempFilePath);
- 
-        if ($imageInfo !== false) { 
-            $newFileName = str_replace('@', '_', $email) . ".$fileExtension"; ;
-            $savePath = __DIR__ . '/avatars/' . $newFileName;
-            $fileUrl = 'avatars/' . $newFileName;
-          
-            if (move_uploaded_file($tempFilePath,  $savePath)) {
-                echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
-                echo "<a href='$fileUrl' target='_blank'>View Image</a>";
-                echo "<br>";
-            } else {
-                echo "<div style='color: red;'>Error: Unable to save the file.</div>";
-            }
-        } else {
-            echo "<div style='color: red;'>Error: Invalid file extension.</div>";
-        }
-    } else {
-        echo "<div style='color: red;'>Error: The file is not an image.</div>";
-    }
 
     if (strlen($name) === 0) {
         $errors['name'] = 'The field is required';
@@ -127,6 +109,26 @@ if (isset($_POST['submit'])){
     if ($games !== '' && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
         $errors['games'] = 'Select games from the options';
     } 
+ 
+    var_dump(ini_get('upload_tmp_dir'), ini_get('upload_max_filesize'), $_FILES);
+    if (!empty($_FILES['avatar']['name']) && !empty($_FILES['avatar']['tmp_name'])) {
+        $tempFilePath = $_FILES['avatar']['tmp_name'];
+        $originalFileName = $_FILES['avatar']['name'];
+        $fileExtension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
+        $targetDirectory = __DIR__ . '/avatars/';
+        $newFileName = str_replace('@', '_', $email) . ".$fileExtension"; 
+        $savePath = __DIR__ . '/avatars/' . $newFileName;
+        $fileUrl = 'avatars/' . $newFileName;
+        $imageInfo = @getimagesize($tempFilePath);
+
+        if ($imageInfo === false) { 
+            $errors['avatar'] = 'The file is not an image';
+        } else {
+            if (!move_uploaded_file($tempFilePath,  $savePath)) {
+            $errors['avatar'] = 'Unable to save the file';
+            }
+        }
+    }
 
     if (empty($errors)) {
         foreach ($_POST as $key => $value) {
@@ -138,7 +140,13 @@ if (isset($_POST['submit'])){
             echo "$key: " . htmlspecialchars(trim($value)) . "<br>";
             }
         }
+        if (!empty($fileUrl)) {
+            echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
+            echo "<a href='$fileUrl' target='_blank'>View Image</a>";
+            echo "<br>";
+        }
     }
+    
 }
 
 echo '</pre>';
@@ -208,8 +216,9 @@ How often do you play computer games:<br>
 
 
 
-Avatar: <input type="file" name="avatar">
-    <br><br>
+Avatar: <input type="file" name="avatar"><br><br>
+<?php printError('avatar', $errors); ?>
+<br><br>
 
 I promise I'll be a good girl:
 <input type="checkbox" name="promise" value="yes"<?= ($promise === 'yes') ? 'checked' : '' ?>><br><br>
