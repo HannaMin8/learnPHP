@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-
+// phpinfo(); exit;
 echo '<pre>';
 
 $errors = array();
@@ -33,7 +33,6 @@ $playGames = ["Every day", "Once a week", "Once a month", "Rarely", "Never"];
 $tempFilePath = '';
 $originalFileName = '';
 $fileExtension = '';
-$targetDirectory = '';
 $newFileName = '';
 $savePath = '';
 $fileUrl = '';
@@ -44,7 +43,7 @@ function printError ($field, $errors){
         echo "<div style='color: red;'>{$errors[$field]}</div>";
     }
 }  
-//var_dump($_FILES['avatar']['error']);
+
 if (isset($_POST['submit'])){
 
     if (strlen($name) === 0) {
@@ -109,44 +108,50 @@ if (isset($_POST['submit'])){
     if ($games !== '' && !in_array($games, ["Every day", "Once a week", "Once a month", "Rarely", "Never"])){
         $errors['games'] = 'Select games from the options';
     } 
- 
+    
+    var_dump($_FILES['avatar']['error']);
     var_dump(ini_get('upload_tmp_dir'), ini_get('upload_max_filesize'), $_FILES);
+    $withFileUpload = false;
     if (!empty($_FILES['avatar']['name']) && !empty($_FILES['avatar']['tmp_name'])) {
+        $withFileUpload = true;
         $tempFilePath = $_FILES['avatar']['tmp_name'];
-        $originalFileName = $_FILES['avatar']['name'];
-        $fileExtension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
-        $targetDirectory = __DIR__ . '/avatars/';
-        $newFileName = str_replace('@', '_', $email) . ".$fileExtension"; 
-        $savePath = __DIR__ . '/avatars/' . $newFileName;
-        $fileUrl = 'avatars/' . $newFileName;
         $imageInfo = @getimagesize($tempFilePath);
 
         if ($imageInfo === false) { 
             $errors['avatar'] = 'The file is not an image';
-        } else {
-            if (!move_uploaded_file($tempFilePath,  $savePath)) {
-            $errors['avatar'] = 'Unable to save the file';
-            }
         }
     }
 
     if (empty($errors)) {
-        foreach ($_POST as $key => $value) {
-            if ($key === 'color'){
-                echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
-            } elseif ($key === 'visitedCountries'){
-                echo "$key:" . implode(', ', $visitedCountries) ."<br>";
-            } else {
-            echo "$key: " . htmlspecialchars(trim($value)) . "<br>";
+        if ($withFileUpload) {
+            $tempFilePath = $_FILES['avatar']['tmp_name'];
+            $originalFileName = $_FILES['avatar']['name'];
+            $fileExtension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
+            $newFileName = str_replace('@', '_', $email) . ".$fileExtension"; 
+            $savePath = __DIR__ . '/avatars/' . $newFileName;
+            if (!move_uploaded_file($tempFilePath,  $savePath)) {
+                $errors['avatar'] = 'Unable to save the file';
+            }
+            $fileUrl = 'avatars/' . $newFileName;
+        }
+
+        if (empty($errors)) {
+            foreach ($_POST as $key => $value) {
+                if ($key === 'color'){
+                    echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
+                } elseif ($key === 'visitedCountries'){
+                    echo "$key:" . implode(', ', $visitedCountries) ."<br>";
+                } else {
+                echo "$key: " . htmlspecialchars(trim($value)) . "<br>";
+                }
+            }
+            if (!empty($fileUrl)) {
+                echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
+                echo "<a href='$fileUrl' target='_blank'>View Image</a>";
+                echo "<br>";
             }
         }
-        if (!empty($fileUrl)) {
-            echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
-            echo "<a href='$fileUrl' target='_blank'>View Image</a>";
-            echo "<br>";
-        }
     }
-    
 }
 
 echo '</pre>';
