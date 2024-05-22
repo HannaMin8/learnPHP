@@ -122,6 +122,13 @@ if (isset($_POST['submit'])){
         }
     }
 
+    function registerUser($email, $password){
+        $file = 'users.txt';
+        $data = $email . '|' . $password . PHP_EOL; 
+        file_put_contents($file, $data, FILE_APPEND);
+    }
+    
+
     if (empty($errors)) {
         if ($withFileUpload) {
             $tempFilePath = $_FILES['avatar']['tmp_name'];
@@ -136,6 +143,7 @@ if (isset($_POST['submit'])){
         }
 
         if (empty($errors)) {
+            registerUser($email, $password);
             foreach ($_POST as $key => $value) {
                 if ($key === 'color'){
                     echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
