@@ -127,6 +127,22 @@ if (isset($_POST['submit'])){
         $data = $email . '|' . $password . PHP_EOL; 
         file_put_contents($file, $data, FILE_APPEND);
     }
+
+    function userExists($email) {
+        $file = 'users.txt';
+    
+        $handle = fopen($file, "r");
+    
+        while (($line = fgets($handle)) !== false) {
+            list($existingEmail, ) = explode('|', $line);
+            $existingEmail = rtrim($existingEmail);
+            if ($existingEmail === $email) {
+                fclose($handle); 
+                return true;
+            }
+        }
+        fclose($handle);
+    }
     
 
     if (empty($errors)) {
@@ -143,7 +159,10 @@ if (isset($_POST['submit'])){
         }
 
         if (empty($errors)) {
-            registerUser($email, $password);
+            if (userExists($email)) {
+                $errors['email'] = 'User with this email already exists';
+            }
+            else { registerUser($email, $password);}
             foreach ($_POST as $key => $value) {
                 if ($key === 'color'){
                     echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
