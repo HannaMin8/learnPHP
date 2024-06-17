@@ -162,7 +162,9 @@ if (isset($_POST['submit'])){
             if (userExists($email)) {
                 $errors['email'] = 'User with this email already exists';
             }
-            else { registerUser($email, $password);}
+            else { 
+                registerUser($email, $password); 
+               
             foreach ($_POST as $key => $value) {
                 if ($key === 'color'){
                     echo "$key: <span style='background-color: $value; color: black;'>$value</span> " ."<br>";
@@ -176,6 +178,8 @@ if (isset($_POST['submit'])){
                 echo "<div style='color: green;'>File upload and saved as $newFileName.</div>";
                 echo "<a href='$fileUrl' target='_blank'>View Image</a>";
                 echo "<br>";
+            }
+            echo "<br><a href='login.php'>Go to login page</a>";
             }
         }
     }
